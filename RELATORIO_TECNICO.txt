@@ -1,0 +1,112 @@
+RELATORIO TECNICO - PROJETO FINAL PSC II
+Simulador de Supermercado em C++
+Aluno: Gabriel Goes | Prof. Giovane Galvao | Engenharia de Software - Campo Real
+
+1. VISAO GERAL
+
+O sistema simula um supermercado no terminal: catalogo de produtos, carrinho de
+compras com opcao de desfazer, fila do caixa e um comparativo de algoritmos de
+busca. Toda estrutura foi feita a mao com structs, ponteiros e new/delete, sem
+containers da STL. O codigo foi dividido em modulos (um par .h/.cpp por
+estrutura) e nenhuma funcao passa de 30 linhas.
+
+2. POR QUE CADA ESTRUTURA FOI ESCOLHIDA
+
+Lista encadeada (catalogo de produtos)
+O catalogo muda o tempo todo (cadastro e remocao) e nao tem tamanho fixo. Com a
+lista, cada produto ocupa um no alocado so quando precisa, sem realocar um vetor
+inteiro. Guardei um ponteiro "fim", entao inserir no final e O(1). Remover por
+codigo e O(n), porque e preciso achar o no, mas a remocao em si so religa
+ponteiros. A lista e a "dona" dos produtos: e ela que da delete neles.
+
+Pilha (carrinho de compras)
+No carrinho o recurso principal e o "desfazer ultimo item" (tipo Ctrl+Z). Isso e
+LIFO por natureza: o ultimo produto colocado e o primeiro a sair. Empilhar e
+desempilhar sao O(1). Cada item guarda uma COPIA de codigo, nome e preco, e nao um
+ponteiro para o produto. Assim, se um produto for removido do catalogo enquanto
+esta num carrinho, o carrinho nao fica com ponteiro invalido, e o preco fica
+"congelado" no momento da compra, como num caixa de verdade.
+
+Fila (caixa)
+Atendimento no caixa e FIFO: quem chegou primeiro e atendido primeiro. A fila tem
+ponteiros para inicio e fim, entao enfileirar e desenfileirar sao O(1). Cada no
+aponta para um Cliente, que leva o proprio carrinho (pilha).
+
+Arvore binaria de busca (indice por codigo)
+A lista e boa para inserir e remover, mas buscar nela e O(n). Como o sistema busca
+produto por codigo o tempo todo (adicionar ao carrinho, desfazer, cadastrar sem
+duplicar), criei uma BST com o codigo como chave. A busca cai para O(log n) em
+media, e a travessia in-ordem lista os produtos ja em ordem de codigo, sem
+precisar ordenar. A arvore NAO e dona dos produtos: os nos so apontam para os
+mesmos objetos da lista, entao nao ha duplicacao de dados. Os produtos iniciais
+foram inseridos fora de ordem de proposito; com 12 produtos a arvore ficou com
+altura 4 (o minimo possivel). Se os codigos fossem inseridos em ordem crescente, a
+arvore degeneraria numa "lista" e a busca voltaria a O(n) - limitacao conhecida de
+uma BST sem balanceamento (AVL ou rubro-negra resolveriam).
+
+Na remocao, em vez de implementar remocao na arvore, a lista remove o produto e o
+indice e reconstruido a partir dela (O(n log n)). Escolhi assim porque e simples,
+seguro (o indice nunca aponta para memoria liberada) e remocao e uma operacao rara
+num catalogo.
+
+3. ALGORITMO DE ORDENACAO: MERGE SORT
+
+Implementei o Merge Sort (ordenacao.cpp). Ele divide o vetor ao meio
+recursivamente ate sobrar um elemento e depois intercala as metades ordenadas.
+
+Complexidade esperada:
+- Tempo: O(n log n) no melhor, medio e pior caso. Sao log2(n) niveis de divisao
+  e, em cada nivel, a intercalacao percorre os n elementos.
+- Espaco: O(n) extra para o vetor auxiliar + O(log n) da pilha de recursao.
+- Estavel: produtos com o mesmo preco mantem a ordem original.
+
+Por que ele e nao Bubble/Selection/Insertion: esses chegam a O(n^2) e o tempo
+depende de como os dados chegam. O Merge Sort tem desempenho garantido. Na pratica,
+ordenar os 12 produtos iniciais por preco levou 29 comparacoes (n log2 n = 43).
+
+A funcao recebe um ponteiro para funcao (Comparador). Com isso o mesmo codigo
+ordena por preco (opcao 3) e por codigo (para a busca binaria), sem repetir a
+logica. A ordenacao e feita num vetor temporario de ponteiros (Produto**), entao
+os produtos nao sao copiados e o catalogo original nao muda de ordem.
+
+4. ALGORITMOS DE BUSCA
+
+- Busca sequencial na lista: O(n), nao exige ordem. Tambem e usada na busca por
+  nome, porque nome nao e a chave da arvore.
+- Busca binaria no vetor ordenado por codigo: O(log n), exige ordenacao antes.
+- Busca na arvore: O(log n) em media, sem precisar ordenar nada.
+
+A opcao 11 gera 20.000 produtos e compara as duas buscas, contando comparacoes e
+medindo o tempo medio de 200 repeticoes. Resultado obtido:
+
+  Caso          Sequencial (comp)   Binaria (comp)
+  Primeiro              1                14
+  Meio             10.000                 1
+  Ultimo           20.000                15
+  Inexistente      20.000                15
+
+A sequencial so ganha quando o item esta no inicio. No pior caso a binaria fez 15
+comparacoes contra 20.000 (log2 20.000 = 14,3), e o tempo caiu de ~60 microssegundos
+para menos de 0,1.
+
+5. GERENCIAMENTO DE MEMORIA
+
+- Todo no, produto, cliente e vetor e criado com new / new[].
+- Cada new tem um delete correspondente, e todo vetor tem seu delete[].
+- Depois de liberar, o ponteiro recebe nullptr (funcoes como liberarCliente e
+  liberarArvore recebem o ponteiro por referencia, Tipo*&, justamente para zerar o
+  ponteiro de quem chamou).
+- Posse bem definida para nao haver delete duplo: a lista e dona dos produtos, a
+  fila e dona dos clientes, cada cliente e dono da sua pilha. A arvore e o vetor
+  temporario so apontam.
+- Ao sair, encerrarSupermercado libera na ordem: fila (clientes e carrinhos),
+  arvore (so os nos, em pos-ordem) e por ultimo a lista (nos e produtos).
+- Testado com valgrind --leak-check=full: "All heap blocks were freed -- no leaks
+  are possible", 0 erros.
+
+6. RECURSIVIDADE
+
+Usada onde a estrutura e naturalmente recursiva: insercao, busca, travessia
+in-ordem, contagem de nos, altura e liberacao da arvore; soma do carrinho
+(totalCarrinhoRecursivo: caso base no nulo = 0, passo = subtotal + resto) e o
+proprio Merge Sort.
