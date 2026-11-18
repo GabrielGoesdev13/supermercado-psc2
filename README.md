@@ -1,8 +1,7 @@
-# Simulador de Supermercado — Projeto Final PSC II
-
 **Centro Universitário Campo Real · Engenharia de Software · Programação e Sistemas Computacionais II**
-**Professor:** Giovane Galvão
-**Aluno:** Gabriel Goes
+
+- **Professor:** Giovane Galvão
+- **Aluno:** Gabriel Goes 
 
 ---
 
@@ -116,18 +115,17 @@ Todas as estruturas de dados foram implementadas manualmente, com ponteiros e `n
 ```
 ├── README.md
 ├── RELATORIO_TECNICO.txt
-└── src/
-    ├── main.cpp            ponto de entrada e laço do menu
-    ├── menu.h / .cpp       telas e opções do menu
-    ├── supermercado.h/.cpp estado geral (catálogo + índice + fila)
-    ├── produto.h / .cpp    struct Produto e comparadores
-    ├── lista.h / .cpp      lista encadeada (catálogo)
-    ├── pilha.h / .cpp      pilha (carrinho)
-    ├── fila.h / .cpp       fila (caixa)
-    ├── arvore.h / .cpp     árvore binária de busca (índice)
-    ├── ordenacao.h / .cpp  Merge Sort
-    ├── busca.h / .cpp      busca sequencial, binária e comparativo
-    └── entrada.h / .cpp    leitura validada do teclado
+├── main.cpp            ponto de entrada e laço do menu
+├── menu.h / .cpp       telas e opções do menu
+├── supermercado.h/.cpp estado geral (catálogo + índice + fila)
+├── produto.h / .cpp    struct Produto e comparadores
+├── lista.h / .cpp      lista encadeada (catálogo)
+├── pilha.h / .cpp      pilha (carrinho)
+├── fila.h / .cpp       fila (caixa)
+├── arvore.h / .cpp     árvore binária de busca (índice)
+├── ordenacao.h / .cpp  Merge Sort
+├── busca.h / .cpp      busca sequencial, binária e comparativo
+└── entrada.h / .cpp    leitura validada do teclado
 ```
 
 ## Como compilar e executar
