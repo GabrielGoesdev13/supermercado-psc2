@@ -2,8 +2,7 @@
 
 **Centro Universitário Campo Real · Engenharia de Software · Programação e Sistemas Computacionais II**
 **Professor:** Giovane Galvão
-**Aluno:** Gabriel Goes (squad individual)
-**Vídeo da apresentação:** _cole aqui o link do YouTube_
+**Aluno:** Gabriel Goes
 
 ---
 
@@ -147,10 +146,6 @@ Verificação de vazamento de memória (Linux):
 valgrind --leak-check=full ./supermercado
 # resultado obtido: "All heap blocks were freed -- no leaks are possible"
 ```
-
-## Divisão de responsabilidades
-
-O squad tem **um integrante**, então todas as partes foram feitas por mim:
 
 | Integrante | Responsabilidade |
 |---|---|
