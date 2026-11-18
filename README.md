@@ -133,7 +133,7 @@ Todas as estruturas de dados foram implementadas manualmente, com ponteiros e `n
 Precisa de um compilador C++ (g++ / MinGW no Windows).
 
 ```bash
-g++ -std=c++17 -Wall -o supermercado src/*.cpp
+g++ -std=c++17 -Wall -o supermercado *.cpp
 ./supermercado          # Linux / macOS
 supermercado.exe        # Windows
 ```
